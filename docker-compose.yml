@@ -1,0 +1,42 @@
+version: "3.8"
+
+volumes:
+  db_volume:
+    driver: local
+
+networks:
+  php_advanced:
+    driver: bridge
+
+services:
+  app:
+    build:
+      context: docker/php
+    restart: always
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8081:80"
+    networks:
+      - php_advanced
+
+  db:
+    image: "postgres:latest"
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - '54321:5432'
+    volumes:
+      - "db_volume:/var/lib/postgresql"
+    networks:
+      - php_advanced
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+# docker-compose up --build -d
