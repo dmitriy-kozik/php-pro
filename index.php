@@ -15,12 +15,12 @@ class User
     }
 
 
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    private function setAge(string $age)
+    private function setAge(string $age): void
     {
         $this->age = $age;
     }
