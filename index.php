@@ -11,7 +11,7 @@ class User
     }
 
     public function __call(string $name, array $arguments) {
-        throw new CustomException('Method ' . $name . ' is not isset (arguments: ' . implode(', ', $arguments) . ')');
+        throw new CustomException('Method ' . $name . ' is not isset or outside of permissions (arguments: ' . implode(', ', $arguments) . ')');
     }
 
 
