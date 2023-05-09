@@ -1,47 +1,51 @@
 <?php
 
-
-trait Trait1
+class CustomException extends Exception
 {
-    public function test(): float
-    {
-        return 1;
-    }
 }
 
-trait Trait2
+class User
 {
-    public function test(): float
+    public function __construct(private string $name, private float $age, private string $email)
     {
-        return 2;
     }
-}
 
-trait Trait3
-{
-    public function test(): float
-    {
-        return 3;
+    public function __call(string $name, array $arguments) {
+        throw new CustomException('Method ' . $name . ' is not isset (arguments: ' . implode(', ', $arguments) . ')');
     }
-}
 
-class Test
-{
-    use Trait1, Trait2, Trait3 {
-        Trait1::test insteadof Trait2, Trait3;
-        Trait2::test as test2;
-        Trait3::test as test3;
-    }
-    public function getSum(): float
+
+    public function setName(string $name)
     {
-        return $this->test() + $this->test2() + $this->test3();
+        $this->name = $name;
     }
+
+    private function setAge(string $age)
+    {
+        $this->age = $age;
+    }
+
+
+    public function getAll(): object
+    {
+        return (object) [
+            'name' => $this->name,
+            'age' => $this->age,
+            'email' => $this->email
+        ];
+    }
+
 }
 
 
 try {
-    $test = new Test();
-    echo $test->getSum();
+    $user = new User('Sam', 28, 'sam@test.com');
+    $user->setName('Dima'); // Success
+    $user->setAge(29); // Private method: Exception
+    $user->setEmail('dima@test.com'); // Method isn't isset: Exception
+    echo $user->getAll()->name;
+} catch (CustomException $e) {
+    echo $e->getMessage();
 } catch (Exception $e) {
     echo $e->getMessage();
 }
