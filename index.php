@@ -6,46 +6,46 @@ class CustomException extends Exception
 
 class User
 {
-    public function __construct(private string $name, private float $age, private string $email)
+    public $id;
+    public $password;
+
+
+    public function __construct($id, $password)
     {
+        $this->setId($id);
+        $this->setPassword($password);
     }
 
-    public function __call(string $name, array $arguments) {
-        throw new CustomException('Method ' . $name . ' is not isset or outside of permissions (arguments: ' . implode(', ', $arguments) . ')');
+    private function setId($id): void
+    {
+        if (!is_int($id)) {
+            throw new CustomException("User ID isn't Integer");
+        }
+        $this->id = $id;
     }
 
-
-    public function setName(string $name): void
+    private function setPassword($password): void
     {
-        $this->name = $name;
+        if (strlen($password) > 8) {
+            throw new CustomException("The password must be no more than 8 characters");
+        }
+        $this->password = $password;
     }
 
-    private function setAge(string $age): void
+    public function getUserData(): object
     {
-        $this->age = $age;
-    }
-
-
-    public function getAll(): object
-    {
-        return (object) [
-            'name' => $this->name,
-            'age' => $this->age,
-            'email' => $this->email
-        ];
+        return $this;
     }
 
 }
 
 
 try {
-    $user = new User('Sam', 28, 'sam@test.com');
-    $user->setName('Dima'); // Success
-    $user->setAge(29); // Private method: Exception
-    $user->setEmail('dima@test.com'); // Method isn't isset: Exception
-    echo $user->getAll()->name;
+    $user = new User(12, '123456789'); // Password Exception
+    echo $user->getUserData()->id;
+
 } catch (CustomException $e) {
-    echo $e->getMessage();
+    echo $e->getMessage() . ' (line: ' . $e->getLine() . ', file: ' . $e->getFile() . ')';
 } catch (Exception $e) {
     echo $e->getMessage();
 }
